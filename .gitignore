@@ -8,3 +8,5 @@ wheels/
 
 # Virtual environments
 .venv
+top_100_movies_full_best_effort.csv
+top_100_movies_full_best_effort.csv:Zone.Identifier

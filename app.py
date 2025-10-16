@@ -120,16 +120,21 @@ app.layout = html.Div(
 )
 
 @app.callback(
-    Output("movies-scatter-plot", "figure"),
-    Output("movies-histogram", "figure"),
-    Input("metacritic-score-filter", "value"),
-    Input("oscar-wins-filter", "value"),
-    Input("date-range", "start_date"),
-    Input("date-range", "end_date"),
-)
-def update_charts(metacritic_score, oscar_wins, start_date, end_date):
-    filtered_data = data.query(
+        Output("movies-scatter-plot", "figure"),
+        Output("movies-histogram", "figure"),
+        Input("metacritic-score-filter", "value"),
+        Input("oscar-wins-filter", "value"),
+        Input("date-range", "start_date"),
+        Input("date-range", "end_date"),
+    )
+
+def update_graphs(metacritic_score, oscar_wins, start_date, end_date):
+    filtered_metacritic = data.query(
         "(`Metacritic Score` >= @metacritic_score) & "
+        "(`Date` >= @start_date) & "
+        "(`Date` <= @end_date)"
+    )
+    filtered_oscars = data.query(
         "(`Oscars Won` >= @oscar_wins) & "
         "(`Date` >= @start_date) & "
         "(`Date` <= @end_date)"
@@ -137,19 +142,14 @@ def update_charts(metacritic_score, oscar_wins, start_date, end_date):
     scatter_figure = {
         "data": [
             {
-                "x": filtered_data["Date"],
-                "y": filtered_data["Metacritic Score"],
-                "type": "lines",
-                "mode": "markers+lines",
+                "x": filtered_metacritic["Date"],
+                "y": filtered_metacritic["Metacritic Score"],
+                "type": "lines+markers",
                 "hovertemplate": "Year: %{x|%Y}<br>Score: %{y}<extra></extra>",
             },
         ],
         "layout": {
-            "title": {
-                "text": "Metacritic Score Over Time",
-                "x": 0.05,
-                "xanchor": "left",
-            },
+            "title": {"text": "Metacritic Score Over Time", "x": 0.05, "xanchor": "left"},
             "xaxis": {"fixedrange": True},
             "yaxis": {"fixedrange": True},
             "colorway": ["#17B897"],
@@ -159,25 +159,21 @@ def update_charts(metacritic_score, oscar_wins, start_date, end_date):
     histogram_figure = {
         "data": [
             {
-                "x": filtered_data["Date"],
-                "y": filtered_data["Oscars Won"],
-                "type": "lines",
-                "mode": "lines+markers",
+                "x": filtered_oscars["Oscars Won"],
+                "type": "histogram",
+                "nbinsx": 10,
+                "hovertemplate": "Oscars Won: %{x}<br>Movies: %{y}<extra></extra>",
             },
         ],
         "layout": {
-            "title": {
-                "text": "Oscars Won Over Time",
-                "x": 0.05,
-                "xanchor": "left",
-            },
-            "xaxis": {"fixedrange": True},
-            "yaxis": {"fixedrange": True},
+            "title": {"text": "Distribution of Oscars Won", "x": 0.05, "xanchor": "left"},
+            "xaxis": {"title": "Oscars Won"},
+            "yaxis": {"title": "Number of Movies"},
             "colorway": ["#E12D39"],
         },
     }
+
     return scatter_figure, histogram_figure
-       
 
 if __name__ == "__main__":
     app.run(debug=True)
