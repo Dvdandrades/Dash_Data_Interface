@@ -73,7 +73,7 @@ app.layout = html.Div(
                                 }
                                 for oscar_win in oscar_wins
                             ],
-                            value=min(oscar_wins),
+                            value=min(oscar_wins) + 1,
                             clearable=False,
                             searchable=False,
                             className="dropdown",
