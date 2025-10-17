@@ -73,7 +73,7 @@ app.layout = html.Div(
                                 }
                                 for oscar_win in oscar_wins
                             ],
-                            value=min(oscar_wins) + 1,
+                            value=min(oscar_wins),
                             clearable=False,
                             searchable=False,
                             className="dropdown",
@@ -129,23 +129,26 @@ app.layout = html.Div(
     )
 
 def update_graphs(metacritic_score, oscar_wins, start_date, end_date):
-    filtered_metacritic = data.query(
-        "(`Metacritic Score` >= @metacritic_score) & "
+    date_filtered = data.query(
         "(`Date` >= @start_date) & "
         "(`Date` <= @end_date)"
     )
-    filtered_oscars = data.query(
-        "(`Oscars Won` >= @oscar_wins) & "
-        "(`Date` >= @start_date) & "
-        "(`Date` <= @end_date)"
+    filtered_metacritic = date_filtered.query(
+        "(`Metacritic Score` >= @metacritic_score)"
+    )
+    filtered_oscars = date_filtered.query(
+        "(`Oscars Won` >= @oscar_wins)"
+       
     )
     scatter_figure = {
         "data": [
             {
                 "x": filtered_metacritic["Date"],
                 "y": filtered_metacritic["Metacritic Score"],
-                "type": "lines+markers",
-                "hovertemplate": "Year: %{x|%Y}<br>Score: %{y}<extra></extra>",
+                "type": "scatter",
+                "mode": "markers",
+                "hovertemplate": "Title: %{text}<br>Year: %{x|%Y}<br>Score: %{y}<extra></extra>",
+                "text": filtered_metacritic["Title"],
             },
         ],
         "layout": {
