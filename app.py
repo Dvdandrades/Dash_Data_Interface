@@ -162,14 +162,14 @@ def update_graphs(metacritic_score, oscar_wins, start_date, end_date):
     histogram_figure = {
         "data": [
             {
-                "x": filtered_oscars["Oscars Won"],
-                "type": "histogram",
-                "nbinsx": 10,
+                "x": filtered_oscars["Oscars Won"].value_counts().sort_index().index,
+                "y": filtered_oscars["Oscars Won"].value_counts().sort_index().values,
+                "type": "bar",
                 "hovertemplate": "Oscars Won: %{x}<br>Movies: %{y}<extra></extra>",
             },
         ],
         "layout": {
-            "title": {"text": "Distribution of Oscars Won", "x": 0.05, "xanchor": "left"},
+            "title": {"text": "Number of Movies by Oscars Won", "x": 0.05, "xanchor": "left"},
             "xaxis": {"title": "Oscars Won"},
             "yaxis": {"title": "Number of Movies"},
             "colorway": ["#E12D39"],
